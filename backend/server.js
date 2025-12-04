@@ -6,6 +6,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import errorHandler from "./middlewares/errorHandler.js";
 import connectDB from "./config/db.js";
+import authRouter from "./routes/authRouter.js";
 
 // ES6 module
 const __filename = fileURLToPath(import.meta.url);
@@ -44,6 +45,9 @@ app.use((req, res) => {
     message: "404  error",
   });
 });
+
+// routes
+app.use("/api/auth", authRouter);
 
 const port = process.env.PORT || 3000;
 
