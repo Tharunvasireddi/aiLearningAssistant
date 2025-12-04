@@ -15,6 +15,7 @@ const getToken = (id) => {
 // register user controller
 const registerUserController = async (req, res, next) => {
   try {
+    console.log("hii hello this is registeriuser controller");
     const { username, email, password } = req.body;
     // check the user is existed or not
     const isUserExisted = await User.findOne({
