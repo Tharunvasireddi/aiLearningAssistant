@@ -32,7 +32,7 @@ const loginValidation = [
 ];
 
 // public routes
-authRouter.post("/regitser", registerValidation, registerUserController);
+authRouter.post("/register", registerValidation, registerUserController);
 authRouter.post("/login", loginValidation, loginUserController);
 
 // protect route
