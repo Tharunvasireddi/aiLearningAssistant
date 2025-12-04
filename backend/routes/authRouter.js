@@ -1,7 +1,10 @@
 import express from "express";
-import body from "express-validator";
-import { loginUserController, registerUserController } from "../controllers/authContoller";
-const router = express.Router();
+import { body } from "express-validator";
+import {
+  loginUserController,
+  registerUserController,
+} from "../controllers/authContoller.js";
+const authRouter = express.Router();
 
 // register validation middlewares
 const registerValidation = [
@@ -29,12 +32,13 @@ const loginValidation = [
 ];
 
 // public routes
-router.post("/regitser", registerValidation,registerUserController);
-router.post("/login", loginValidation,loginUserController);
+authRouter.post("/regitser", registerValidation, registerUserController);
+authRouter.post("/login", loginValidation, loginUserController);
 
 // protect route
-router.get("/getprofile",);
-router.put("/updateprofile",);
-router.post("/changepassword",);
 
-export default router;
+// authRouter.get("/getprofile");
+// authRouter.put("/updateprofile");
+// authRouter.post("/changepassword");
+
+export default authRouter;

@@ -26,6 +26,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
   },
   { timestamps: true }
 );
@@ -40,7 +44,7 @@ userSchema.pre("save", async () => {
   this.password = await bcryptjs.hash(this.password, salt);
 });
 
-userSchema.methods.camparePasswords = async (enteredPassword) => {
+userSchema.methods.comparePassword = async (enteredPassword) => {
   return await bcryptjs.compare(enteredPassword, this.password);
 };
 
