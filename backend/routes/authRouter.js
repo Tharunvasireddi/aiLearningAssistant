@@ -1,9 +1,13 @@
 import express from "express";
 import { body } from "express-validator";
 import {
+  changePasswordController,
+  getProfileController,
   loginUserController,
   registerUserController,
+  updateProfileController,
 } from "../controllers/authContoller.js";
+import { protectMiddleware } from "../middlewares/auth.js";
 
 // app router
 const authRouter = express.Router();
@@ -39,8 +43,8 @@ authRouter.post("/login", loginValidation, loginUserController);
 
 // protect route
 
-// authRouter.get("/getprofile");
-// authRouter.put("/updateprofile");
-// authRouter.post("/changepassword");
+authRouter.get("/getprofile", protectMiddleware, getProfileController);
+authRouter.put("/updateprofile", protectMiddleware, updateProfileController);
+authRouter.post("/changepassword", protectMiddleware, changePasswordController);
 
 export default authRouter;
