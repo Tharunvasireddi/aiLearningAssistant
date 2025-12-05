@@ -4,6 +4,8 @@ import {
   loginUserController,
   registerUserController,
 } from "../controllers/authContoller.js";
+
+// app router
 const authRouter = express.Router();
 
 // register validation middlewares
@@ -32,7 +34,7 @@ const loginValidation = [
 ];
 
 // public routes
-authRouter.post("/register", registerValidation, registerUserController);
+authRouter.post("/register", registerUserController);
 authRouter.post("/login", loginValidation, loginUserController);
 
 // protect route

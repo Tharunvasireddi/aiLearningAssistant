@@ -5,7 +5,7 @@ import { User } from "../models/User.js";
 const getToken = (id) => {
   return jwt.sign(
     {
-      UserId: id,
+      userId: id,
     },
     process.env.JWT_SECRET_KEY,
     { expiresIn: "7d" }
@@ -15,7 +15,6 @@ const getToken = (id) => {
 // register user controller
 const registerUserController = async (req, res, next) => {
   try {
-    console.log("hii hello this is registeriuser controller");
     const { username, email, password } = req.body;
     // check the user is existed or not
     const isUserExisted = await User.findOne({
@@ -24,13 +23,13 @@ const registerUserController = async (req, res, next) => {
 
     if (isUserExisted) {
       return isUserExisted.email === email
-        ? res.status(404).json({
+        ? res.status(409).json({
             success: false,
-            messsage: "entered email is already existed",
+            message: "entered email already exists",
           })
-        : res.status(404).json({
+        : res.status(409).json({
             success: false,
-            messsage: "username is already existed",
+            message: "username already exists",
           });
     }
 
@@ -43,26 +42,22 @@ const registerUserController = async (req, res, next) => {
     if (!newUser) {
       res.status(400).json({
         success: false,
-        message: "registeration of user is failed please try again later ",
+        message: "registration failed, please try again later",
       });
-      console.log("registeration of user is failed ", newUser);
       return;
     }
-    console.log("user is created successfully", newUser);
-    if (newUser) {
-      res.status(200).json({
-        success: true,
-        message: "user regisered successfully",
-        createdUser: {
-          username: newUser.username,
-          email: newUser.email,
-          password: newUser.password,
-        },
-        createdAt: newUser.createdAt,
-      });
-    }
+
+    res.status(201).json({
+      success: true,
+      message: "user registered successfully",
+      createdUser: {
+        username: newUser.username,
+        email: newUser.email,
+      },
+      createdAt: newUser.createdAt,
+    });
   } catch (error) {
-    console.error(`error while registering the user ${error.messsage}`);
+    console.error(`error while registering the user ${error.message}`);
     next(error);
   }
 };
@@ -71,39 +66,38 @@ const registerUserController = async (req, res, next) => {
 const loginUserController = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    const isUserExisted = await User.findone({ email: email });
+    const isUserExisted = await User.findOne({ email: email }).select(
+      "+password"
+    );
     if (!isUserExisted) {
-      res.status(404).json({
+      return res.status(404).json({
         success: false,
-        message: "user is not found",
+        message: "user not found",
       });
-      return;
     }
 
-    const isPasswordMatched = isUserExisted.methods.comparePassword(password);
+    const isPasswordMatched = await isUserExisted.comparePassword(password);
     if (!isPasswordMatched) {
-      res.status(404).json({
+      return res.status(401).json({
         success: false,
-        message: "password is incorrect ,please enter correct password ",
+        message: "password is incorrect, please enter correct password",
       });
-      return;
     }
 
-    const accesstoken = getToken(isUserExisted.userId);
+    const accesstoken = getToken(isUserExisted._id);
     if (!accesstoken) {
       console.log("error while creating accesstoken");
-      return;
+      return res.status(500).json({ success: false, message: "token error" });
     }
-    console.log("accesstoken is created succesfully", accesstoken);
-    console.log("user logined successfully", isUserExisted);
+
     res.status(200).json({
       success: true,
-      message: "user is logined successfully",
-      userId: isUserExisted.userId,
+      message: "user logged in successfully",
+      userId: isUserExisted._id,
       token: accesstoken,
     });
   } catch (error) {
-    console.error(`error while login the user ${error.messsage}`);
+    console.error(`error while login the user ${error.message}`);
     next(error);
   }
 };

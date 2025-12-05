@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "please provide valid email"],
       lowercase: true,
-      match: [/^\S+@\S+\.S+$/, "please provide a valid emial "],
+      match: [/^\S+@\S+\.\S+$/, "please provide a valid email"],
     },
     password: {
       type: String,
@@ -36,15 +36,17 @@ const userSchema = new mongoose.Schema(
 
 // hash passwords
 
-userSchema.pre("save", async () => {
-  if (!this.isModified("password")) {
-    next();
+userSchema.pre("save", async function () {
+  try {
+    if (!this.isModified("password")) return;
+    const salt = await bcryptjs.genSalt(10);
+    this.password = await bcryptjs.hash(this.password, salt);
+  } catch (err) {
+    console.log("error in user.js", err);
   }
-  const salt = await bcryptjs.genSalt(10);
-  this.password = await bcryptjs.hash(this.password, salt);
 });
 
-userSchema.methods.comparePassword = async (enteredPassword) => {
+userSchema.methods.comparePassword = async function (enteredPassword) {
   return await bcryptjs.compare(enteredPassword, this.password);
 };
 

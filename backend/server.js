@@ -37,17 +37,16 @@ app.use(express.urlencoded({ extended: true }));
 // static folder for uploads
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-//404 error
+// routes
+app.use("/api/auth", authRouter);
 
+// 404 error
 app.use((req, res) => {
   res.status(404).json({
     success: false,
     message: "404  error",
   });
 });
-
-// routes
-app.use("/api/auth", authRouter);
 
 const port = process.env.PORT || 3000;
 
