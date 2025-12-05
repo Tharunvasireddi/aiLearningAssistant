@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import { User } from "../models/User.js";
+import e from "express";
 
 // creating token
 const getToken = (id) => {
@@ -103,13 +104,112 @@ const loginUserController = async (req, res, next) => {
 };
 
 // get profile controller
-const getProfileController = async (req, res) => {};
+const getProfileController = async (req, res) => {
+  try {
+    console.log("hi hello ", req.user._id);
+    const user = await User.findById({ _id: req.user._id });
+    if (!user) {
+      res.status(404).json({
+        sucess: false,
+        message: "user is not found",
+      });
+    }
+    console.log("this is user", user);
+    res.status(200).json({
+      sucess: true,
+      message: "user details are feteched successfully",
+      user: {
+        username: user.username,
+        email: user.email,
+        profileImage: user.profileImage,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+      },
+    });
+  } catch (error) {
+    console.log("error while get profile :", error);
+  }
+};
 
 // update profile
-const updateProfileController = async (req, res) => {};
+const updateProfileController = async (req, res) => {
+  try {
+    const { username, email, profileImage } = req.body;
+    const userId = req.user._id;
+    const user = await User.findById({ _id: userId });
+    if (!user) {
+      res.status(404).json({
+        success: true,
+        message: "user is not found",
+      });
+      return;
+    }
+    if (username) user.username = username;
+    if (email) user.email = email;
+    if (profileImage) user.profileImage = profileImage;
+    await user.save();
+    res.status(200).json({
+      success: true,
+      message: "user is updated successfully",
+      data: {
+        username: user.username,
+        email: user.email,
+        profileImage: user.profileImage,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+      },
+    });
+  } catch (error) {
+    console.log("error while updating the user", error);
+    res.status(400).json({
+      success: false,
+      message: "unable to update the user profile",
+    });
+  }
+};
 
 // change password controller
-const changePasswordController = async (req, res) => {};
+const changePasswordController = async (req, res) => {
+  try {
+    const { newPassword, currentPassword } = req.body;
+    if (!newPassword || !currentPassword) {
+      res.status(404).json({
+        success: false,
+        message: "please provide the current passowrd and new password",
+      });
+    }
+    const user = await User.findById({ _id: req.user._id }).select("+password");
+    if (!user) {
+      res.status(404).json({
+        success: false,
+        message: "user is not found",
+      });
+      return;
+    }
+    console.log("hi hello");
+
+    console.log(user, "user password", user.password);
+    console.log("hi hello");
+    const isPasswordMatch = await user.comparePassword(currentPassword);
+    console.log("hi hello after");
+    if (!isPasswordMatch) {
+      res.status(400).json({
+        success: false,
+        message: "please correct current password",
+      });
+    }
+    user.password = newPassword;
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "password is changes successfully",
+    });
+  } catch (error) {
+    console.log("error while changing the password ", error);
+  }
+};
 
 export {
   registerUserController,

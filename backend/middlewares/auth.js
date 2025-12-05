@@ -24,10 +24,9 @@ const protectMiddleware = async (req, res, next) => {
       if (!decodedToken) {
         console.log("decode token is not found ");
       }
-      console.log("hi hello ");
       const userId = decodedToken.userId;
       console.log(userId);
-      const existedUser = await User.findById({ _id: userId });
+      const existedUser = await User.findById(decodedToken.userId);
       if (!existedUser) {
         res.status(404).json({
           success: false,
