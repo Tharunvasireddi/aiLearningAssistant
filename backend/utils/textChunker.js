@@ -6,7 +6,7 @@
  * @returns {Array <(content :string,chunkIndex : number,pageNumber:number)>}
  */
 
-export const chunkTest = (text, chunkSize = 500, overlap = 50) => {
+export const chunkText = (text, chunkSize = 500, overlap = 50) => {
   if (!text || text.trim().length === 0) {
     return [];
   }

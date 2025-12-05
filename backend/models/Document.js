@@ -24,7 +24,7 @@ const documentSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    extractText: {
+    extractedText: {
       type: String,
       defualt: "",
     },
