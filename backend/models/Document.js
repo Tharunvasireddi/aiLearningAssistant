@@ -20,7 +20,7 @@ const documentSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    filesize: {
+    fileSize: {
       type: Number,
       required: true,
     },

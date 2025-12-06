@@ -2,7 +2,7 @@ import { Document } from "../models/Document.js";
 import fs from "fs/promises";
 import extractTextFromPdf from "../utils/pdfParser.js";
 import { chunkText } from "../utils/textChunker.js";
-
+import mongoose from "mongoose";
 //  @desc upload pdf document
 // @route Post /api/document/upload
 // @access private
@@ -14,7 +14,6 @@ const createDocumentController = async (req, res, next) => {
         error: "please upload a pdf file",
       });
     }
-
     const { title } = req.body;
     // delete uploaded file if no title is provided
     if (!title) {
@@ -30,11 +29,12 @@ const createDocumentController = async (req, res, next) => {
     const baseUrl = `http://localhost:${process.env.PORT || 8000}`;
     const fileUrl = `${baseUrl}/uploads/documents/${req.file.filename}`;
 
+    console.log("this is file ", req.file);
     // Create document record
     const document = await Document.create({
-      userId: req.user._id,
+      UserId: req.user._id,
       title,
-      fileName: req.file.orginalname,
+      fileName: req.file.originalname,
       filepath: fileUrl,
       fileSize: req.file.size,
       status: "processing",
@@ -43,7 +43,7 @@ const createDocumentController = async (req, res, next) => {
     // process PDF in background (in production,use a queue like blue)
 
     processPDF(document._id, req.file.path).catch((err) => {
-      console.error(`PDF processing error`, error);
+      console.error(`PDF processing error`, err);
     });
 
     res.status(200).json({
@@ -56,7 +56,7 @@ const createDocumentController = async (req, res, next) => {
     if (req.file) {
       await fs.unlink(req.file.path).catch(() => {});
     }
-    console.log(error);
+    console.log("hi ghello ", error);
     next(error);
   }
 };
@@ -67,6 +67,50 @@ const createDocumentController = async (req, res, next) => {
 
 const getDocumentsController = async (req, res, next) => {
   try {
+    const documents = await Document.aggregate([
+      {
+        $match: { userId: new mongoose.Types.ObjectId(req.user._id) },
+      },
+      {
+        $lookup: {
+          from: "flashcards",
+          localFiled: "_id",
+          foreignField: "documentId",
+          as: "flashcardSets",
+        },
+      },
+      {
+        $lookup: {
+          from: "quizzes",
+          localField: "_id",
+          foreignField: "documentId",
+          as: "quizzes",
+        },
+      },
+      {
+        $addFields: {
+          flashcardCount: { $size: "$flashcardSets" },
+          quizCount: { $size: "$quizzes" },
+        },
+      },
+      {
+        $project: {
+          extractedText: 0,
+          chunks: 0,
+          flashcardSets: 0,
+          quizzes: 0,
+        },
+      },
+      {
+        $sord: { uploadDate: -1 },
+      },
+    ]);
+
+    res.status(200).json({
+      success: true,
+      count: documents.length,
+      data: documents,
+    });
   } catch (error) {
     next(error);
   }
