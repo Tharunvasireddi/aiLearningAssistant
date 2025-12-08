@@ -47,7 +47,7 @@ export const chunkText = (text, chunkSize = 500, overlap = 50) => {
 
       // split large paragraph into word-based hunks
       for (let i = 0; i < paragraphWords.length; i += chunkSize - overlap) {
-        const chunkWords = paragraphWords.slice(i, i + chunksize);
+        const chunkWords = paragraphWords.slice(i, i + chunkSize);
         chunks.push({
           content: chunkWords.join(" "),
           chunkIndex: chunkIndex++,
@@ -72,7 +72,10 @@ export const chunkText = (text, chunkSize = 500, overlap = 50) => {
       // create overlap from previous chunk
       const prevChunkText = currentChunk.join(" ");
       const prevWords = prevChunkText.split(/\s+/);
-      const overlapText = prevWords.split(/\s+/).length + paragraphWordCount;
+      const overlapWords = prevWords.slice(-overlap);
+
+      currentChunk = [...overlapWords, paragraph.trim()];
+      currentWordCount = overlapWords.length + paragraphWordCount;
     } else {
       // Add paragraph to current chunk
       currentChunk.push(paragraph.trim());
@@ -213,5 +216,6 @@ export const findReleventChunks = (chunks, query, maxChunks = 3) => {
         return b.mathedWords - a.mathedWords;
       }
       return a.chunkIndex - b.chunkIndex;
-    }).slice(0,maxChunks);
+    })
+    .slice(0, maxChunks);
 };

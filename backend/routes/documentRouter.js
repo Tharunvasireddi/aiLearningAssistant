@@ -14,7 +14,7 @@ const documentRouter = express.Router();
 documentRouter.use(protectMiddleware);
 
 documentRouter.post("/upload", upload.single("file"), createDocumentController);
-documentRouter.get("/", getDocumentsController);
+documentRouter.get("/getdocuments", getDocumentsController);
 documentRouter.get("/:id", getDocumentController);
 documentRouter.put("/:id", updateDocumentController);
 documentRouter.delete("/:id", deleteDocumentController);

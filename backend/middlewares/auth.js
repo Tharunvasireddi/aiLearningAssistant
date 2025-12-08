@@ -36,6 +36,11 @@ const protectMiddleware = async (req, res, next) => {
       req.user = existedUser;
       console.log("user details at protect middleware", existedUser);
       next();
+    } else {
+      return res.status(401).json({
+        success: false,
+        message: "No authorization token provided",
+      });
     }
   } catch (error) {
     console.log("error while decoding token", error);

@@ -67,14 +67,15 @@ const createDocumentController = async (req, res, next) => {
 
 const getDocumentsController = async (req, res, next) => {
   try {
+    console.log("hie helooooo");
     const documents = await Document.aggregate([
       {
-        $match: { userId: new mongoose.Types.ObjectId(req.user._id) },
+        $match: { UserId: new mongoose.Types.ObjectId(req.user._id) },
       },
       {
         $lookup: {
           from: "flashcards",
-          localFiled: "_id",
+          localField: "_id",
           foreignField: "documentId",
           as: "flashcardSets",
         },
@@ -102,7 +103,7 @@ const getDocumentsController = async (req, res, next) => {
         },
       },
       {
-        $sord: { uploadDate: -1 },
+        $sort: { uploadDate: -1 },
       },
     ]);
 
@@ -112,6 +113,8 @@ const getDocumentsController = async (req, res, next) => {
       data: documents,
     });
   } catch (error) {
+    console.log("error while getting documents", error);
+
     next(error);
   }
 };
