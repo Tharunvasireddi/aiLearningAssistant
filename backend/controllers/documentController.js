@@ -3,6 +3,8 @@ import fs from "fs/promises";
 import extractTextFromPdf from "../utils/pdfParser.js";
 import { chunkText } from "../utils/textChunker.js";
 import mongoose from "mongoose";
+import { FlashCard } from "../models/FlashCard.js";
+import { Quiz } from "../models/Quiz.js";
 //  @desc upload pdf document
 // @route Post /api/document/upload
 // @access private
@@ -121,7 +123,42 @@ const getDocumentsController = async (req, res, next) => {
 
 const getDocumentController = async (req, res, next) => {
   try {
+    const document = await Document.findOne({
+      _id: req.params.id,
+      UserId: req.user._id,
+    });
+    if (!document) {
+      res.status(404).json({
+        success: false,
+        message: "document is not found",
+      });
+    }
+    // now we have to count the no of flash cards and quizes associated with this  doucment
+    const flashCardCount = await FlashCard.countDocuments({
+      documentId: document._id,
+      UserId: req.user._id,
+    });
+
+    const quizCardCount = await Quiz.countDocuments({
+      documentId: document._id,
+      UserId: req.user._id,
+    });
+
+    //  upadating the last accessing date
+    document.lastAccessed = Date.now();
+    await document.save();
+
+    const documentData = document.toObject();
+    documentData.flashCardCount = flashCardCount;
+    documentData.quizCardCount = quizCardCount;
+
+    res.status(200).json({
+      success: true,
+      message: "document is fetched successfuly",
+      data: documentData,
+    });
   } catch (error) {
+    console.log("error while fetching the single document");
     next(error);
   }
 };
@@ -149,15 +186,27 @@ const processPDF = async (documentId, filePath) => {
   }
 };
 
-const updateDocumentController = async (req, res, next) => {
-  try {
-  } catch (error) {
-    next(error);
-  }
-};
-
 const deleteDocumentController = async (req, res) => {
   try {
+    const document = await Document.findOne({
+      _id: req.params.id,
+      UserId: req.user._id,
+    });
+    if (!document) {
+      res.status(404).json({
+        success: false,
+        message: "document is not found",
+      });
+    }
+
+    // unlink the file from the file system
+    await fs.unlink(document.filepath).catch(() => {});
+
+    await document.deleteOne();
+    res.status(200).json({
+      success: true,
+      message: "document is deleted successfully",
+    });
   } catch (error) {
     next(error);
   }
@@ -167,6 +216,5 @@ export {
   createDocumentController,
   getDocumentsController,
   getDocumentController,
-  updateDocumentController,
   deleteDocumentController,
 };

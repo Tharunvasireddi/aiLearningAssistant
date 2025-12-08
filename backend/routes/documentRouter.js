@@ -5,7 +5,6 @@ import {
   deleteDocumentController,
   getDocumentController,
   getDocumentsController,
-  updateDocumentController,
 } from "../controllers/documentController.js";
 import upload from "../config/multer.js";
 const documentRouter = express.Router();
@@ -16,7 +15,6 @@ documentRouter.use(protectMiddleware);
 documentRouter.post("/upload", upload.single("file"), createDocumentController);
 documentRouter.get("/getdocuments", getDocumentsController);
 documentRouter.get("/:id", getDocumentController);
-documentRouter.put("/:id", updateDocumentController);
 documentRouter.delete("/:id", deleteDocumentController);
 
 export default documentRouter;
