@@ -8,6 +8,7 @@ import errorHandler from "./middlewares/errorHandler.js";
 import connectDB from "./config/db.js";
 import authRouter from "./routes/authRouter.js";
 import documentRouter from "./routes/documentRouter.js";
+import flashCardRouter from "./routes/flashcardRouter.js";
 
 // ES6 module
 const __filename = fileURLToPath(import.meta.url);
@@ -41,6 +42,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // routes
 app.use("/api/auth", authRouter);
 app.use("/api/document", documentRouter);
+app.use("/api/flashcards", flashCardRouter);
 
 // 404 error
 app.use((req, res) => {
