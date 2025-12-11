@@ -58,14 +58,15 @@ const reviewFlashCard = async (req, res) => {
     flashCard.lastReviewed = Date.now();
     flashCard.reviewCount = flashCard.reviewCount + 1;
 
-
     await flashCardSet.save();
     res.status(200).json({
       success: true,
       message: "flash card is reviewed successfully",
-      data : flashCardSet
+      data: flashCardSet,
     });
-  } catch (error) {}
+  } catch (error) {
+    console.log("error while reviweing flashcards", error);
+  }
 };
 
 const toggleStarFlashCard = async (req, res) => {
