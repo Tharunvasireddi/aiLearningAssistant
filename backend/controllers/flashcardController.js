@@ -71,12 +71,64 @@ const reviewFlashCard = async (req, res) => {
 
 const toggleStarFlashCard = async (req, res) => {
   try {
-  } catch (error) {}
+    const flashcardSet = await Flashcard.findone({
+      "card._id": req.params.cardId,
+      userId: req.user._id,
+    });
+
+    if (!flashcardSet) {
+      return res.status(404).json({
+        success: false,
+        error: "Flashcard set or card not found",
+      });
+    }
+
+    const cardIndex = flashcardSet.cards.findIndex(
+      (card) => card._id.toString() === req.params.cardId
+    );
+
+    if (cardIndex === -1) {
+      return res.status(404).json({
+        success: false,
+        error: "Card not found in set",
+        statusCode: 404,
+      });
+    }
+    // toggle star
+    flashcardSet.cards[cardIndex].isStarred =
+      !flashcardSet.cards[cardIndex].isStarred;
+    await flashcardSet.save();
+    res.status(200).json({
+      success: false,
+      data: flashcardSet,
+      message: "Flashcard is toggled successfully",
+    });
+  } catch (error) {
+    console.log("error while toggling the flash cards :", error);
+  }
 };
 
 const deleteFlashCard = async (req, res) => {
   try {
-  } catch (error) {}
+    const flashcardSet = await FlashCard.findOne({
+      _id: req.params.id,
+      userId: req.user._id,
+    });
+    if (!flashcardSet) {
+      return res.status(404).json({
+        success: false,
+        message: "flash card is not found",
+      });
+    }
+
+    await flashcardSet.deleteOne();
+    res.status(200).json({
+      success: false,
+      message: "flashcardset is deleted successfully",
+    });
+  } catch (error) {
+    console.log("error while deleting the flashcardses :", error);
+  }
 };
 
 export {
