@@ -183,8 +183,26 @@ export const generateSummary = async (text) => {
  * @returns {Promise<sring>}
  */
 
-export const chatWithContext = async(quesions,chunks){
+export const chatWithContext = async(quesion,chunks){
     const context = chunks.map((c,i)=> `[chunk ${i+1}]\n${c.content}`).join('\n\n');
-    console.log("context_____",context)
+    console.log("context_____",context);
+
+    const prompt = `Based on the following context from a document ,Analyse the context and answer the user's question 
+    if the answer is not in the context say so.
+
+    Context : 
+    ${context}
+
+    Question:${quesion}
+
+    Answer :
+    `
+    try {
+        
+    } catch (error) {
+        
+    }
+
+    
 
 }
