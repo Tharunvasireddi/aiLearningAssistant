@@ -1,9 +1,9 @@
 import dotenv from "dotenv";
-import { GoogleGenAi } from "@google/genai";
-
+dotenv.config();
+import { GoogleGenAI } from "@google/genai";
 dotenv.config();
 
-const ai = new GoogleGenAi({});
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 if (!process.env.GEMINI_API_KEY) {
   console.log(
@@ -49,7 +49,7 @@ export const generateFlashcards = async (text, count = 10) => {
         difficulty = "meduim";
 
       for (const line of lines) {
-        if (line.startWith("Q:")) {
+        if (line.startsWith("Q:")) {
           question = line.substring(2).trim();
         } else if (line.startsWith("A:")) {
           answer = line.substring(2).trim();
@@ -98,17 +98,17 @@ export const generateQuiz = async (text, numQuestions = 5) => {
   try {
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash-lite",
-      contens: prompt,
+      contents: prompt,
     });
 
     const generatedText = response.text;
 
-    const quesions = [];
+    const questions = [];
 
     const questionBlocks = generatedText.split("---").filter((q) => q.trim());
 
-    for (const line of lines) {
-      const trimmed = line.trim().split("\n");
+    for (const block of questionBlocks) {
+      const lines = block.trim().split("\n");
       let question = "",
         options = [],
         correctAnswer = "",
@@ -117,7 +117,7 @@ export const generateQuiz = async (text, numQuestions = 5) => {
 
       for (const line of lines) {
         const trimmed = line.trim();
-        if (trimmed.sartsWith("Q:")) {
+        if (trimmed.startsWith("Q:")) {
           question = trimmed.substring(2).trim();
         } else if (trimmed.match(/^O\d:/)) {
           options.push(trimmed.substring(3).trim());
@@ -132,8 +132,8 @@ export const generateQuiz = async (text, numQuestions = 5) => {
           }
         }
       }
-      if (quesion && options.length === 4 && correctAnswer) {
-        questionBlocks.push({
+      if (question && options.length === 4 && correctAnswer) {
+        questions.push({
           question,
           options,
           correctAnswer,
@@ -142,7 +142,7 @@ export const generateQuiz = async (text, numQuestions = 5) => {
         });
       }
     }
-    return questionBlocks.slice(0, numQuestions);
+    return questions.slice(0, numQuestions);
   } catch (error) {
     console.error("Gemini API error:", error);
     throw new Error("Failed to generate quiz");
@@ -158,7 +158,7 @@ export const generateQuiz = async (text, numQuestions = 5) => {
 export const generateSummary = async (text) => {
   const prompt = `Provide a concise summary of the following ext ,highlighting the key concpets ,main ideas,and important points, keep the summary clear and structure
   Text :
-  ${text.subsstring(0, 20000)}
+  ${text.substring(0, 20000)}
   `;
 
   try {
@@ -186,7 +186,6 @@ export const chatWithContext = async (quesion, chunks) => {
   const context = chunks
     .map((c, i) => `[chunk ${i + 1}]\n${c.content}`)
     .join("\n\n");
-  console.log("context_____", context);
 
   const prompt = `Based on the following context from a document ,Analyse the context and answer the user's question 
     if the answer is not in the context say so.
@@ -227,7 +226,7 @@ export const explainConcept = async (concept, context) => {
   `;
 
   try {
-    const response = await ai.model.generateContent({
+    const response = await ai.models.generateContent({
       model: "gemini-2.5-flash-lite",
       contents: prompt,
     });
@@ -239,6 +238,3 @@ export const explainConcept = async (concept, context) => {
     throw new Error("failed to explain concept");
   }
 };
-
-
-
