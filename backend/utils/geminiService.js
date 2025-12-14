@@ -171,23 +171,24 @@ export const generateSummary = async (text) => {
     return generatedText;
   } catch (error) {
     console.error("Gemini API error:", error);
-    throw new Error('Failed o generate summary');
+    throw new Error("Failed o generate summary");
   }
 };
 
-
 /**
- * chat with document context 
+ * chat with document context
  * @param {string} question -user question
  * @param {Array<Object>} chunks - Relevant Document chunks
- * @returns {Promise<sring>}
+ * @returns {Promise<string>}
  */
 
-export const chatWithContext = async(quesion,chunks){
-    const context = chunks.map((c,i)=> `[chunk ${i+1}]\n${c.content}`).join('\n\n');
-    console.log("context_____",context);
+export const chatWithContext = async (quesion, chunks) => {
+  const context = chunks
+    .map((c, i) => `[chunk ${i + 1}]\n${c.content}`)
+    .join("\n\n");
+  console.log("context_____", context);
 
-    const prompt = `Based on the following context from a document ,Analyse the context and answer the user's question 
+  const prompt = `Based on the following context from a document ,Analyse the context and answer the user's question 
     if the answer is not in the context say so.
 
     Context : 
@@ -196,13 +197,48 @@ export const chatWithContext = async(quesion,chunks){
     Question:${quesion}
 
     Answer :
-    `
-    try {
-        
-    } catch (error) {
-        
-    }
+    `;
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash-lite",
+      contents: prompt,
+    });
+    const generatedText = response.text;
+    return generatedText;
+  } catch (error) {
+    console.error("gemini API error:", error);
+    throw new Error("Failed to process chat request");
+  }
+};
 
-    
+/**
+ * Explain a specific concpet
+ * @param {string} concept - concept to explain
+ * @param {string} context - Relevant context
+ * @returns {Promise<string>}
+ */
 
-}
+export const explainConcept = async (concept, context) => {
+  const prompt = `Explain the concept of "${concept}" based on the folloing context.
+  Provide a clear educational explaination that easy to understand.
+  easy to example if relevant.
+
+  context : ${context.substring(0, 10000)}
+  `;
+
+  try {
+    const response = await ai.model.generateContent({
+      model: "gemini-2.5-flash-lite",
+      contents: prompt,
+    });
+
+    const generatedText = response.text;
+    return generatedText;
+  } catch (error) {
+    console.error("Gemini API error:", error);
+    throw new Error("failed to explain concept");
+  }
+};
+
+
+
