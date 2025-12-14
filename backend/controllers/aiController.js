@@ -30,8 +30,8 @@ export const generateFlashController = async (req, res) => {
         error: "Document is not found or not ready",
       });
     }
+    console.log(document);
     // generate flashcards using gemini
-
     const cards = await geminiService.generateFlashcards(
       document.extractedText,
       parseInt(count)

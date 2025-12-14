@@ -1,11 +1,11 @@
 import fs from "fs/promises";
-import {PDFParse} from "pdf-parse";
+import { PDFParse } from "pdf-parse";
 const extractTextFromPdf = async (filepath) => {
   try {
     const dataBuffer = await fs.readFile(filepath);
 
-    const data = await new PDFParse(dataBuffer);
-
+    const data = new PDFParse({ url: filepath });
+    console.log("i am at extractedextfron", data);
     return {
       text: data.text,
       numpages: data.numpages,

@@ -2,8 +2,6 @@ import dotenv from "dotenv";
 import { GoogleGenAI } from "@google/genai";
 dotenv.config();
 
-
-
 if (!process.env.GEMINI_API_KEY) {
   console.log(
     "FATAl Error : GEMINI_API_KEY is not set in the environment varaibles"
@@ -19,6 +17,7 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
  */
 
 export const generateFlashcards = async (text, count = 10) => {
+  console.log("hi hello ", text);
   const prompt = `Generate exactly ${count} education flashcards from the following text.
     Format each flashcard as:
     Q:[Clear,specific question]
@@ -29,7 +28,7 @@ export const generateFlashcards = async (text, count = 10) => {
 
     Text
     ${text.substring(0, 1500)}`;
-
+  console.log("hi hello ", text);
   try {
     console.log("hi hellooo");
     const response = await ai.models.generateContent({

@@ -170,7 +170,7 @@ const processPDF = async (documentId, filePath) => {
 
     // create chunk
     const chunks = chunkText(text, 500, 50);
-
+    console.log("text at pdf processingL:",text)
     // update document
     await Document.findByIdAndUpdate(documentId, {
       extractedText: text,
