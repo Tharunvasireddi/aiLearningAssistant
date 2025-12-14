@@ -1,5 +1,5 @@
 import express from "express";
-import { protectMiddleware } from "../middlewares/auth";
+import { protectMiddleware } from "../middlewares/auth.js";
 import {
   chatController,
   explianConceptController,
@@ -7,7 +7,7 @@ import {
   generateQuizController,
   generateSummaryController,
   getChatHistoryController,
-} from "../controllers/aiController";
+} from "../controllers/aiController.js";
 
 const aiRouter = express.Router();
 

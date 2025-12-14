@@ -1,8 +1,8 @@
-import Document from "../models/Document.js";
-import Flashcard from "../models/FlashCard.js";
-import Quiz from "../models/ChatHistory.js";
-import ChatHistory from "../models/ChatHistory.js";
-import * as geminiServices from "../utils/geminiService.js";
+import { Document } from "../models/Document.js";
+import { FlashCard } from "../models/FlashCard.js";
+import { Quiz } from "../models/Quiz.js";
+import { Chat } from "../models/ChatHistory.js";
+import * as geminiService from "../utils/geminiService.js";
 import { findReleventChunks } from "../utils/textChunker.js";
 
 // @desc Generate flashCards from document
@@ -11,6 +11,50 @@ import { findReleventChunks } from "../utils/textChunker.js";
 
 export const generateFlashController = async (req, res) => {
   try {
+    const { documentId, count = 10 } = req.body;
+
+    if (!documentId) {
+      return res.status(404).json({
+        success: false,
+        error: "Please prvide documentId",
+      });
+    }
+
+    const document = await Document.findOne({
+      _id: documentId,
+      UserId: req.user._id,
+      status: "ready",
+    });
+
+    if (!document) {
+      return res.status(404).json({
+        success: false,
+        error: "Document is not found or not ready",
+      });
+    }
+    // generate flashcards using gemini
+    const cards = await geminiService.generateFlashcards(
+      document.extractedText,
+      parseInt(count)
+    );
+    // save to data base
+    const flashcardSet = await FlashCard.create({
+      UserId: req.user._id,
+      documentId: document._id,
+      cards: cards.map((card) => ({
+        question: card.question,
+        answer: card.answer,
+        difficulty: card.difficulty,
+        reviewCount: 0,
+        isStarred: false,
+      })),
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "flashcards are generated successfully",
+      data: flashcardSet,
+    });
   } catch (error) {}
 };
 
@@ -30,12 +74,10 @@ export const generateSummaryController = async (req, res) => {};
 // @access Private
 export const chatController = async (req, res) => {};
 
-// @desec explain fro document 
+// @desec explain fro document
 // @route Post/api/ai/explain-concept
 // @access Private
-export const explianConceptController = async(req,res)=>{
-    
-}
+export const explianConceptController = async (req, res) => {};
 
 // @desc Get chat history fro a document
 // @Qroute Get/api/ai/chat-history/:documentId
