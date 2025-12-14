@@ -1,9 +1,8 @@
 import dotenv from "dotenv";
-dotenv.config();
 import { GoogleGenAI } from "@google/genai";
 dotenv.config();
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+
 
 if (!process.env.GEMINI_API_KEY) {
   console.log(
@@ -11,7 +10,7 @@ if (!process.env.GEMINI_API_KEY) {
   );
   process.exit(1);
 }
-
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 /**
  * Genrate flashcard from text
  * @param {string} text -document of flashcards to genrate
@@ -32,10 +31,15 @@ export const generateFlashcards = async (text, count = 10) => {
     ${text.substring(0, 1500)}`;
 
   try {
+    console.log("hi hellooo");
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash-lite",
       contents: prompt,
     });
+    console.log(
+      "i am the response at the gemeni sevice generae flsshdffkj",
+      response
+    );
     const generatedText = response.text;
 
     // parse the response
@@ -88,7 +92,7 @@ export const generateQuiz = async (text, numQuestions = 5) => {
     O4:[Option 4]
     C:[Correct option - exactly as written above]
     E:[Breif explained]
-    D:[Difficulty : easy,meduim,or hard]
+    D:[Difficulty : easy,medium,or hard]
 
     separate question with "---"
     Text :
@@ -113,7 +117,7 @@ export const generateQuiz = async (text, numQuestions = 5) => {
         options = [],
         correctAnswer = "",
         explaination = "",
-        difficulty = "meduim";
+        difficulty = "medium";
 
       for (const line of lines) {
         const trimmed = line.trim();

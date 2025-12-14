@@ -12,7 +12,6 @@ import { findReleventChunks } from "../utils/textChunker.js";
 export const generateFlashController = async (req, res) => {
   try {
     const { documentId, count = 10 } = req.body;
-
     if (!documentId) {
       return res.status(404).json({
         success: false,
@@ -25,7 +24,6 @@ export const generateFlashController = async (req, res) => {
       UserId: req.user._id,
       status: "ready",
     });
-
     if (!document) {
       return res.status(404).json({
         success: false,
@@ -33,10 +31,12 @@ export const generateFlashController = async (req, res) => {
       });
     }
     // generate flashcards using gemini
+
     const cards = await geminiService.generateFlashcards(
       document.extractedText,
       parseInt(count)
     );
+    console.log("i am the cards of your document:", cards);
     // save to data base
     const flashcardSet = await FlashCard.create({
       UserId: req.user._id,

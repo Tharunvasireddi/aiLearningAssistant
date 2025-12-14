@@ -47,12 +47,12 @@ app.use("/api/flashcards", flashCardRouter);
 app.use("/api/aiRoutes", aiRouter);
 
 // 404 error
-app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    message: "404  error",
-  });
-});
+// app.use((req, res) => {
+//   res.status(404).json({
+//     success: false,
+//     message: "404  error efef",
+//   });
+// });
 
 const port = process.env.PORT || 3000;
 

@@ -44,6 +44,11 @@ const protectMiddleware = async (req, res, next) => {
     }
   } catch (error) {
     console.log("error while decoding token", error);
+    res.status(400).json({
+      success: false,
+      message: "error while decoding token",
+      error: error,
+    });
   }
 };
 

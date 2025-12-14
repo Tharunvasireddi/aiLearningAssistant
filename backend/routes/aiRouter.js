@@ -13,7 +13,7 @@ const aiRouter = express.Router();
 
 aiRouter.use(protectMiddleware);
 
-aiRouter.post("/generate-flashcarda", generateFlashController);
+aiRouter.post("/generate-flashcards", generateFlashController);
 aiRouter.post("/generate-quiz", generateQuizController);
 aiRouter.post("/generate-summary", generateSummaryController);
 aiRouter.post("chat", chatController);
