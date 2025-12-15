@@ -33,7 +33,7 @@ export const generateFlashController = async (req, res) => {
     // console.log("this is the docment that we go:", document);
     // generate flashcards using gemini
     const cards = await geminiService.generateFlashcards(
-     document.extractedText,
+      document.extractedText,
       parseInt(count)
     );
     // save to data base
@@ -54,14 +54,31 @@ export const generateFlashController = async (req, res) => {
       message: "flashcards are generated successfully",
       data: flashcardSet,
     });
-  } catch (error) {}
+  } catch (error) {
+    console.log("error while generating flashcards :", error);
+    res.status(400).json({
+      success: false,
+      message: "error while generating flashcards",
+    });
+  }
 };
 
 // @desc Generate quiz from document
 // @route Post/api/ai/generate-quiz
 // @acess Private
 
-export const generateQuizController = async (req, res) => {};
+export const generateQuizController = async (req, res) => {
+  try {
+       
+
+  } catch (error) {
+    console.log("error while generate Quizes", error);
+    res.status(400).json({
+      success: false,
+      message: "error while generating quiz",
+    });
+  }
+};
 
 // @desec Generate document summary
 // @route Post/api/ai/generate-summary
