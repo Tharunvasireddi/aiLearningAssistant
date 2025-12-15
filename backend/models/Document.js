@@ -26,7 +26,7 @@ const documentSchema = new mongoose.Schema(
     },
     extractedText: {
       type: String,
-      defualt:"",
+      defualt: "",
     },
     chunks: [
       {
@@ -50,7 +50,7 @@ const documentSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["processing", "reades", "failed"],
+      enum: ["processing", "ready", "failed"],
       defualt: "processing",
     },
   },

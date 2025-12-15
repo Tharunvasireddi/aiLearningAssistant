@@ -23,20 +23,19 @@ export const generateFlashController = async (req, res) => {
       _id: documentId,
       UserId: req.user._id,
       status: "ready",
-    });
+    }).select("+extractedText");
     if (!document) {
       return res.status(404).json({
         success: false,
         error: "Document is not found or not ready",
       });
     }
-    console.log(document);
+    // console.log("this is the docment that we go:", document);
     // generate flashcards using gemini
     const cards = await geminiService.generateFlashcards(
-      document.extractedText,
+     document.extractedText,
       parseInt(count)
     );
-    console.log("i am the cards of your document:", cards);
     // save to data base
     const flashcardSet = await FlashCard.create({
       UserId: req.user._id,

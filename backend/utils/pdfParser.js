@@ -2,14 +2,18 @@ import fs from "fs/promises";
 import { PDFParse } from "pdf-parse";
 const extractTextFromPdf = async (filepath) => {
   try {
-    const dataBuffer = await fs.readFile(filepath);
-
+    // const dataBuffer = await fs.readFile(filepath);
+    // console.log("this is data buffer", dataBuffer);
     const data = new PDFParse({ url: filepath });
-    console.log("i am at extractedextfron", data);
+    const result = await data.getText();
+    // console.log("this is result :", Object.keys(result));
+    // console.log("this is line 9:", result.text);
+
+    // console.log("this is total of the result :", result.total);
     return {
-      text: data.text,
-      numpages: data.numpages,
-      info: data.info,
+      text: result.text,
+      numpages: result.pages,
+      total: result.total,
     };
   } catch (error) {
     console.log(

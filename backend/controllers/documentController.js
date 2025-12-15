@@ -170,13 +170,14 @@ const processPDF = async (documentId, filePath) => {
 
     // create chunk
     const chunks = chunkText(text, 500, 50);
-    console.log("text at pdf processingL:",text)
+    console.log("this chunks of text at :", chunks);
     // update document
-    await Document.findByIdAndUpdate(documentId, {
-      extractedText: text,
+     const documentUpdaed = await Document.findByIdAndUpdate(documentId, {
+      extractedText:text,
       chunks: chunks,
       status: "ready",
     });
+    await documentUpdaed.save();
     console.log(`document ${documentId} processed sucessfully`);
   } catch (error) {
     console.log("error while processing the pdf", error);
