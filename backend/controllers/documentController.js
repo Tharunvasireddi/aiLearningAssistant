@@ -146,7 +146,7 @@ const getDocumentController = async (req, res, next) => {
 
     //  upadating the last accessing date
     document.lastAccessed = Date.now();
-    await document.save();
+    // await document.save();
 
     const documentData = document.toObject();
     documentData.flashCardCount = flashCardCount;

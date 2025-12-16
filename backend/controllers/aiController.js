@@ -46,7 +46,7 @@ export const generateFlashController = async (req, res) => {
         difficulty: card.difficulty,
         reviewCount: 0,
         isStarred: false,
-      })),
+      })), 
     });
 
     res.status(200).json({
@@ -69,6 +69,7 @@ export const generateFlashController = async (req, res) => {
 
 export const generateQuizController = async (req, res) => {
   try {
+    
        
 
   } catch (error) {

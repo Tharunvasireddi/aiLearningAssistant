@@ -17,14 +17,21 @@ const getAllFlashCardController = async (req, res) => {
     });
   } catch (error) {
     console.log("error while fetching the flashcards :", error);
+    res.status(404).json({
+      success: false,
+      message: "error while fetching the single flashcard",
+      error: error,
+    });
   }
 };
 
 const getFlashCards = async (req, res) => {
   try {
-    const flashCards = await flashCards
-      .find({ UserId: req.user._id, documentId: req.params.documentId })
-      .populate("document", "title filename")
+    const flashCards = await FlashCard.find({
+      UserId: req.user._id,
+      documentId: req.params.documentId,
+    })
+      .populate("documentId", "title filename")
       .sort({ createdAt: -1 });
 
     res.status(200).json({
@@ -44,6 +51,7 @@ const reviewFlashCard = async (req, res) => {
       "cards._id": req.params._id,
       userId: req.user._id,
     });
+    console.log("this flashcards set :", flashCardSet);
 
     const flashCardIndex = flashCardSet.cards.findIndex(
       (card) => card._id.toString() === req.params._id
@@ -66,6 +74,11 @@ const reviewFlashCard = async (req, res) => {
     });
   } catch (error) {
     console.log("error while reviweing flashcards", error);
+    res.status(404).json({
+      success: false,
+      message: "error while reviewing the flashcards",
+      error: error,
+    });
   }
 };
 
