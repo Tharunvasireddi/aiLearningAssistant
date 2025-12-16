@@ -1,6 +1,7 @@
 import express from "express";
 import { protectMiddleware } from "../middlewares/auth.js";
 import {
+  deleteFlashCard,
   getAllFlashCardController,
   getFlashCards,
   reviewFlashCard,
@@ -16,6 +17,6 @@ flashCardRouter.get("/", getAllFlashCardController);
 flashCardRouter.get("/:documentId", getFlashCards);
 flashCardRouter.post("/:cardId/review", reviewFlashCard);
 flashCardRouter.put("/:cardId/star", toggleStarFlashCard);
-flashCardRouter.delete("/:id", deleteDocumentController);
+flashCardRouter.delete("/:Id", deleteFlashCard);
 
 export default flashCardRouter;

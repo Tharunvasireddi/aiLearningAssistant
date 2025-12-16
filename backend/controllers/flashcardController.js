@@ -48,17 +48,17 @@ const getFlashCards = async (req, res) => {
 const reviewFlashCard = async (req, res) => {
   try {
     const flashCardSet = await FlashCard.findOne({
-      "cards._id": req.params._id,
-      userId: req.user._id,
+      "cards._id": req.params.cardId,
+      UserId: req.user._id,
     });
     console.log("this flashcards set :", flashCardSet);
 
     const flashCardIndex = flashCardSet.cards.findIndex(
-      (card) => card._id.toString() === req.params._id
+      (card) => card._id.toString() === req.params.cardId
     );
     if (flashCardIndex === -1) {
       res.status(404).json({
-        success: true,
+        success: flase,
         message: "flash card is not found",
       });
     }
@@ -84,9 +84,9 @@ const reviewFlashCard = async (req, res) => {
 
 const toggleStarFlashCard = async (req, res) => {
   try {
-    const flashcardSet = await Flashcard.findone({
-      "card._id": req.params.cardId,
-      userId: req.user._id,
+    const flashcardSet = await FlashCard.findOne({
+      "cards._id": req.params.cardId,
+      UserId: req.user._id,
     });
 
     if (!flashcardSet) {
@@ -118,14 +118,19 @@ const toggleStarFlashCard = async (req, res) => {
     });
   } catch (error) {
     console.log("error while toggling the flash cards :", error);
+    res.status(400).json({
+      success : false,
+      message :"error while toggleStarFlashcards",
+      error : error
+    })
   }
 };
 
 const deleteFlashCard = async (req, res) => {
   try {
     const flashcardSet = await FlashCard.findOne({
-      _id: req.params.id,
-      userId: req.user._id,
+      _id: req.params.Id,
+      UserId: req.user._id,
     });
     if (!flashcardSet) {
       return res.status(404).json({
