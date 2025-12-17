@@ -17,7 +17,6 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
  */
 
 export const generateFlashcards = async (text, count = 10) => {
-  console.log("hi hello ", text);
   const prompt = `Generate exactly ${count} education flashcards from the following text.
     Format each flashcard as:
     Q:[Clear,specific question]
@@ -28,7 +27,6 @@ export const generateFlashcards = async (text, count = 10) => {
 
     Text
     ${text.substring(0, 1500)}`;
-  console.log("hi hello ", text);
   try {
     console.log("hi hellooo");
     const response = await ai.models.generateContent({
@@ -105,10 +103,12 @@ export const generateQuiz = async (text, numQuestions = 5) => {
     });
 
     const generatedText = response.text;
+    console.log("this generated text for the quiz :", generatedText);
 
     const questions = [];
 
     const questionBlocks = generatedText.split("---").filter((q) => q.trim());
+    console.log("this is question blocks :", questionBlocks);
 
     for (const block of questionBlocks) {
       const lines = block.trim().split("\n");
@@ -129,7 +129,7 @@ export const generateQuiz = async (text, numQuestions = 5) => {
         } else if (trimmed.startsWith("E:")) {
           explaination = trimmed.substring(2).trim();
         } else if (trimmed.startsWith("D:")) {
-          const diff = trimmed.subsstring(2).trim().toLowerCase();
+          const diff = trimmed.substring(2).trim().toLowerCase();
           if (["easy", "medium", "hard"].includes(diff)) {
             difficulty = diff;
           }
@@ -165,7 +165,7 @@ export const generateSummary = async (text) => {
   `;
 
   try {
-    const response = await a.models.generatContent({
+    const response = await ai.models.generateContent({
       model: "gemini-2.5-flash-lite",
       contents: prompt,
     });

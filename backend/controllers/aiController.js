@@ -46,7 +46,7 @@ export const generateFlashController = async (req, res) => {
         difficulty: card.difficulty,
         reviewCount: 0,
         isStarred: false,
-      })), 
+      })),
     });
 
     res.status(200).json({
@@ -69,9 +69,48 @@ export const generateFlashController = async (req, res) => {
 
 export const generateQuizController = async (req, res) => {
   try {
-    
-       
+    const { documentId, numQuestion = 5, title } = req.body;
 
+    if (!documentId) {
+      return res.status(404).json({
+        success: false,
+        message: "document id is not foound,please provide the doucment",
+      });
+    }
+
+    const document = await Document.findOne({
+      _id: documentId,
+      UserId: req.user._id,
+      status: "ready",
+    });
+
+    if (!document) {
+      return res.status(404).json({
+        success: false,
+        message: "document is not found",
+      });
+    }
+    const questions = await geminiService.generateQuiz(
+      document.extractedText,
+      parseInt(numQuestion)
+    );
+    console.log("qestions of the quiz is :", questions);
+
+    const quiz = await Quiz.create({
+      UserId: req.user._id,
+      documentId: documentId,
+      title: title || `${document.title}-quiz`,
+      questions: questions,
+      totalQuestions: questions.length,
+      userAnswer: [],
+      score: 0,
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "quiz generated Succesfully",
+      data: quiz,
+    });
   } catch (error) {
     console.log("error while generate Quizes", error);
     res.status(400).json({
@@ -84,7 +123,47 @@ export const generateQuizController = async (req, res) => {
 // @desec Generate document summary
 // @route Post/api/ai/generate-summary
 // @access Private
-export const generateSummaryController = async (req, res) => {};
+export const generateSummaryController = async (req, res) => {
+  try {
+    const {documentId} = req.body;
+    if (!documentId) {
+      return res.status(404).json({
+        success: false,
+        message: "document ID is not found",
+      });
+    }
+
+    const document = await Document.findOne({
+      _id: documentId,
+      UserId: req.user._id,
+      status: "ready",
+    });
+
+    if (!document) {
+      return res.status(404).json({
+        success: false,
+        message: "document is not found",
+      });
+    }
+
+    const generatedSummary = await geminiService.generateSummary(
+      document.extractedText
+    );
+    console.log("generated Summary :", generatedSummary);
+    res.status(200).json({
+      success: false,
+      message: "summary is generated successfully",
+      summary: generatedSummary,
+    });
+  } catch (error) {
+    console.log("error while generating Summary :", error);
+    res.status(400).json({
+      success: false,
+      message: "error while generating summary",
+      error: error,
+    });
+  }
+};
 
 // @desec chat with document
 // @route Post/api/ai/chat
