@@ -30,7 +30,7 @@ const documentSchema = new mongoose.Schema(
     },
     chunks: [
       {
-        contents: {
+        content: {
           type: String,
           required: true,
         },

@@ -72,10 +72,12 @@ export const chunkText = (text, chunkSize = 500, overlap = 50) => {
       // create overlap from previous chunk
       const prevChunkText = currentChunk.join(" ");
       const prevWords = prevChunkText.split(/\s+/);
-      const overlapWords = prevWords.slice(-overlap);
+      const overlapText = prevWords
+        .slice(-Math.min(overlap, prevWords.length))
+        .join(" ");
 
       currentChunk = [...overlapWords, paragraph.trim()];
-      currentWordCount = overlapWords.length + paragraphWordCount;
+      currentWordCount = overlapText.split(/\s+/).length + paragraphWordCount;
     } else {
       // Add paragraph to current chunk
       currentChunk.push(paragraph.trim());
@@ -106,6 +108,7 @@ export const chunkText = (text, chunkSize = 500, overlap = 50) => {
       }
     }
   }
+  console.log("these are chunks :", chunks);
   return chunks;
 };
 
@@ -163,16 +166,17 @@ export const findReleventChunks = (chunks, query, maxChunks = 3) => {
   }
 
   const scoredChunks = chunks.map((chunk, index) => {
+    console.log("scored chunks :", chunk);
     const content = chunk.content.toLowerCase();
     const contentWords = content.split(/\s+/).length;
     let score = 0;
 
     for (const word of queryWords) {
       // exact word match (higer score)
-      const exactMathes = (
-        content.Match(new RegExp(`\\b${word}\\b`, "g")) || []
+      const exactMatches = (
+        content.match(new RegExp(`\\b${word}\\b`, "g")) || []
       ).length;
-      score += exactMathes * 3;
+      score += exactMatches * 3;
 
       // partial match (lower score)
       const partialMatches = (content.match(new RegExp(word, "g")) || [])

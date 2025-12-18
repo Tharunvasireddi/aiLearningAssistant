@@ -16,7 +16,7 @@ aiRouter.use(protectMiddleware);
 aiRouter.post("/generate-flashcards", generateFlashController);
 aiRouter.post("/generate-quiz", generateQuizController);
 aiRouter.post("/generate-summary", generateSummaryController);
-aiRouter.post("chat", chatController);
+aiRouter.post("/chat", chatController);
 aiRouter.post("/explain-concept", explianConceptController);
 aiRouter.get("chat-history/:documentId", getChatHistoryController);
 
