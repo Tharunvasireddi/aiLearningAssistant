@@ -18,6 +18,6 @@ aiRouter.post("/generate-quiz", generateQuizController);
 aiRouter.post("/generate-summary", generateSummaryController);
 aiRouter.post("/chat", chatController);
 aiRouter.post("/explain-concept", explianConceptController);
-aiRouter.get("chat-history/:documentId", getChatHistoryController);
+aiRouter.get("/chat-history/:documentId", getChatHistoryController);
 
 export default aiRouter;

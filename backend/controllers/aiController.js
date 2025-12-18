@@ -295,6 +295,43 @@ export const explianConceptController = async (req, res) => {
 // @access Private
 export const getChatHistoryController = async (req, res) => {
   try {
-    const { documentId } = req.body;
-  } catch (error) {}
+    const { documentId } = req.params;
+    console.log("this chat history :", req.params);
+    const document = await Document.findOne({
+      _id: documentId,
+      UserId: req.user._id,
+    });
+
+    if (!document) {
+      return res.status(404).json({
+        success: false,
+        message: "document is not found",
+      });
+    }
+
+    const chatHistory = await Chat.findOne({
+      documentId: documentId,
+      UserId: req.user._id,
+    }).select("+message");
+
+    if (!chatHistory) {
+      return res.status(404).json({
+        success: true,
+        data: [],
+        message: "there is no chat history",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "chat history is feteched successfully",
+      data: chatHistory.message,
+    });
+  } catch (error) {
+    console.log("error while fetching chat histroy :", error);
+    return res.status(400).json({
+      success: false,
+      message: "error while fetching chat histroy",
+    });
+  }
 };
