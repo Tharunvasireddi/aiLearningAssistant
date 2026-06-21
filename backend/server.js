@@ -1,15 +1,15 @@
-import dotenv from "dotenv";
-dotenv.config();
-import express from "express";
 import cors from "cors";
+import dotenv from "dotenv";
+import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
-import errorHandler from "./middlewares/errorHandler.js";
 import connectDB from "./config/db.js";
+import aiRouter from "./routes/aiRouter.js";
 import authRouter from "./routes/authRouter.js";
 import documentRouter from "./routes/documentRouter.js";
 import flashCardRouter from "./routes/flashcardRouter.js";
-import aiRouter from "./routes/aiRouter.js";
+import quizRouter from "./routes/quizRouter.js";
+dotenv.config();
 
 // ES6 module
 const __filename = fileURLToPath(import.meta.url);
@@ -24,12 +24,12 @@ connectDB();
 
 // middlewares to handle cors
 app.use(
-  cors({
-    origin: "*",
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  })
+	cors({
+		origin: "*",
+		methods: ["GET", "POST", "PUT", "DELETE"],
+		allowedHeaders: ["Content-Type", "Authorization"],
+		credentials: true,
+	}),
 );
 
 app.use(express.json());
@@ -45,6 +45,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/document", documentRouter);
 app.use("/api/flashcards", flashCardRouter);
 app.use("/api/aiRoutes", aiRouter);
+app.use("/api/quizes", quizRouter);
 
 // 404 error
 // app.use((req, res) => {
@@ -54,13 +55,13 @@ app.use("/api/aiRoutes", aiRouter);
 //   });
 // });
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8000;
 
 app.listen(port, () => {
-  console.log(`server is running on the port ${port}`);
+	console.log(`server is running on the port ${port}`);
 });
 
 process.on("unhandledRejection", (err) => {
-  console.log(`${err.message}`);
-  process.exit(1);
+	console.log(`${err.message}`);
+	process.exit(1);
 });
